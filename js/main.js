@@ -93,7 +93,7 @@ window.addEventListener('load', function () {
 (function () {
   const titles = [
     'IS Student',
-    'System Developer',
+    'System Analyst',
     'Film Director',
     'Problem Solver',
     'Creative Thinker',
@@ -358,11 +358,19 @@ window.addEventListener('load', function () {
       badge: 'OJT Memory',
       title: 'OJT Experience — Completion Day',
       desc: 'Celebrating the successful completion of the On-the-Job Training program, marking a significant milestone in the academic journey.'
+    },
+    {
+      src: 'assets/videos/The Doll - Horror Trailer.mp4',
+      type: 'video',
+      badge: 'Film Project',
+      title: 'The Doll — Horror Trailer',
+      desc: 'A horror trailer directed as part of a classroom film competition. This project showcases storytelling, cinematography, and creative direction skills.'
     }
   ];
 
   let current = 0;
   let autoTimer;
+  let videoPlaying = false;
 
   const mainImg     = document.getElementById('achMainImg');
   const imgWrap     = document.getElementById('achImgWrap');
@@ -382,8 +390,12 @@ window.addEventListener('load', function () {
   // Build thumbnails
   slides.forEach((slide, i) => {
     const thumb = document.createElement('div');
-    thumb.className = 'ach-thumb' + (i === 0 ? ' active' : '');
-    thumb.innerHTML = `<img src="${slide.src}" alt="${slide.title}" loading="lazy" />`;
+    thumb.className = 'ach-thumb' + (i === 0 ? ' active' : '') + (slide.type === 'video' ? ' ach-thumb-video' : '');
+    if (slide.type === 'video') {
+      thumb.innerHTML = `<video src="${slide.src}" muted preload="metadata" style="width:100%;height:100%;object-fit:cover;"></video><i class="bi bi-play-circle-fill ach-thumb-play"></i>`;
+    } else {
+      thumb.innerHTML = `<img src="${slide.src}" alt="${slide.title}" loading="lazy" />`;
+    }
     thumb.addEventListener('click', () => { goTo(i); resetAutoPlay(); });
     thumbsWrap.appendChild(thumb);
   });
@@ -401,16 +413,53 @@ window.addEventListener('load', function () {
     current = ((idx % slides.length) + slides.length) % slides.length;
     const slide = slides[current];
 
-    // Animate out
-    mainImg.style.opacity = '0';
-    mainImg.style.transform = 'scale(0.95)';
+    // Remove any existing video element
+    const existingVideo = imgWrap.querySelector('video.ach-viewer-video');
 
-    setTimeout(() => {
-      mainImg.src = slide.src;
-      mainImg.alt = slide.title;
-      mainImg.style.opacity = '1';
-      mainImg.style.transform = 'scale(1)';
-    }, 200);
+    if (slide.type === 'video') {
+      // Hide image, show video
+      mainImg.style.opacity = '0';
+      mainImg.style.display = 'none';
+      overlay.style.display = 'none';
+
+      if (existingVideo) existingVideo.remove();
+
+      const video = document.createElement('video');
+      video.className = 'ach-viewer-video';
+      video.src = slide.src;
+      video.controls = true;
+      video.preload = 'metadata';
+      video.style.width = '100%';
+      video.style.height = '100%';
+      video.style.objectFit = 'contain';
+      video.style.background = '#000';
+      video.style.position = 'absolute';
+      video.style.inset = '0';
+      video.style.zIndex = '2';
+      video.addEventListener('click', (e) => e.stopPropagation());
+      video.addEventListener('play', () => { videoPlaying = true; clearInterval(autoTimer); });
+      video.addEventListener('pause', () => { videoPlaying = false; resetAutoPlay(); });
+      video.addEventListener('ended', () => { videoPlaying = false; resetAutoPlay(); });
+      imgWrap.appendChild(video);
+
+      setTimeout(() => { video.style.opacity = '1'; }, 50);
+    } else {
+      // Remove video if present
+      if (existingVideo) existingVideo.remove();
+      overlay.style.display = '';
+      mainImg.style.display = '';
+
+      // Animate out
+      mainImg.style.opacity = '0';
+      mainImg.style.transform = 'scale(0.95)';
+
+      setTimeout(() => {
+        mainImg.src = slide.src;
+        mainImg.alt = slide.title;
+        mainImg.style.opacity = '1';
+        mainImg.style.transform = 'scale(1)';
+      }, 200);
+    }
 
     // Update info with animation
     const infoEl = document.getElementById('achInfo');
@@ -465,8 +514,9 @@ window.addEventListener('load', function () {
     }
   }, { passive: true });
 
-  // Click on image to open lightbox
-  imgWrap.addEventListener('click', () => {
+  // Click on image to open lightbox (skip for video slides)
+  imgWrap.addEventListener('click', (e) => {
+    if (slides[current].type === 'video') return;
     openLightbox(current);
   });
 
@@ -481,6 +531,7 @@ window.addEventListener('load', function () {
   // Auto-play
   function resetAutoPlay() {
     clearInterval(autoTimer);
+    if (videoPlaying) return;
     autoTimer = setInterval(() => {
       goTo(current + 1);
     }, 5000);
@@ -498,16 +549,33 @@ window.addEventListener('load', function () {
   resetAutoPlay();
 
   // ── Lightbox ──
+  function updateLightboxMedia(slide) {
+    const lightboxImg = document.getElementById('lightboxImg');
+    const lightboxVideo = document.getElementById('lightboxVideo');
+    const lightboxCaption = document.getElementById('lightboxCaption');
+
+    if (slide.type === 'video') {
+      lightboxImg.style.display = 'none';
+      lightboxVideo.src = slide.src;
+      lightboxVideo.style.display = 'block';
+      lightboxVideo.controls = true;
+    } else {
+      lightboxVideo.style.display = 'none';
+      lightboxVideo.pause();
+      lightboxVideo.src = '';
+      lightboxImg.style.display = '';
+      lightboxImg.src = slide.src;
+      lightboxImg.alt = slide.title;
+    }
+    lightboxCaption.textContent = slide.title;
+  }
+
   window.openLightbox = function(idx) {
     current = idx;
     const slide = slides[current];
     const lightbox = document.getElementById('lightbox-modal');
-    const lightboxImg = document.getElementById('lightboxImg');
-    const lightboxCaption = document.getElementById('lightboxCaption');
 
-    lightboxImg.src = slide.src;
-    lightboxImg.alt = slide.title;
-    lightboxCaption.textContent = slide.title;
+    updateLightboxMedia(slide);
 
     lightbox.classList.add('open');
     document.body.style.overflow = 'hidden';
@@ -515,6 +583,9 @@ window.addEventListener('load', function () {
 
   window.closeLightbox = function() {
     const lightbox = document.getElementById('lightbox-modal');
+    const lightboxVideo = document.getElementById('lightboxVideo');
+    lightboxVideo.pause();
+    lightboxVideo.src = '';
     lightbox.classList.remove('open');
     document.body.style.overflow = '';
   };
@@ -522,16 +593,8 @@ window.addEventListener('load', function () {
   window.lightboxPrev = function() {
     current = ((current - 1) + slides.length) % slides.length;
     const slide = slides[current];
-    const lightboxImg = document.getElementById('lightboxImg');
-    const lightboxCaption = document.getElementById('lightboxCaption');
-    lightboxImg.style.opacity = '0';
-    lightboxImg.style.transform = 'scale(0.9)';
     setTimeout(() => {
-      lightboxImg.src = slide.src;
-      lightboxImg.alt = slide.title;
-      lightboxCaption.textContent = slide.title;
-      lightboxImg.style.opacity = '1';
-      lightboxImg.style.transform = 'scale(1)';
+      updateLightboxMedia(slide);
     }, 150);
     goTo(current);
   };
@@ -539,16 +602,8 @@ window.addEventListener('load', function () {
   window.lightboxNext = function() {
     current = (current + 1) % slides.length;
     const slide = slides[current];
-    const lightboxImg = document.getElementById('lightboxImg');
-    const lightboxCaption = document.getElementById('lightboxCaption');
-    lightboxImg.style.opacity = '0';
-    lightboxImg.style.transform = 'scale(0.9)';
     setTimeout(() => {
-      lightboxImg.src = slide.src;
-      lightboxImg.alt = slide.title;
-      lightboxCaption.textContent = slide.title;
-      lightboxImg.style.opacity = '1';
-      lightboxImg.style.transform = 'scale(1)';
+      updateLightboxMedia(slide);
     }, 150);
     goTo(current);
   };

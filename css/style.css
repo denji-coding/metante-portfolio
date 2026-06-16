@@ -1010,6 +1010,23 @@ section {
   transform: scale(1.05);
 }
 
+/* Video thumbnail play icon */
+.ach-thumb-video {
+  position: relative;
+}
+
+.ach-thumb-play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.2rem;
+  color: #fff;
+  filter: drop-shadow(0 1px 3px rgba(0,0,0,0.6));
+  pointer-events: none;
+  z-index: 2;
+}
+
 /* ── Dot indicators ── */
 .ach-dots-wrap {
   display: flex;
