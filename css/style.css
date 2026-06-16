@@ -220,14 +220,26 @@ section {
 }
 
 .nav-logo {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 1.4rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, var(--pink), var(--purple));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
   text-decoration: none;
+  display: flex;
+  align-items: center;
+  transition: transform 0.3s ease;
+}
+
+.nav-logo:hover {
+  transform: scale(1.05);
+}
+
+.nav-logo img {
+  height: 50px;
+  width: auto;
+  display: block;
+  filter: drop-shadow(0 0 8px rgba(255, 79, 163, 0.3));
+  transition: filter 0.3s ease;
+}
+
+.nav-logo:hover img {
+  filter: drop-shadow(0 0 14px rgba(255, 79, 163, 0.6));
 }
 
 .nav-links {
