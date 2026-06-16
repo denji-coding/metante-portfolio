@@ -358,34 +358,6 @@ window.addEventListener('load', function () {
       badge: 'OJT Memory',
       title: 'OJT Experience — Completion Day',
       desc: 'Celebrating the successful completion of the On-the-Job Training program, marking a significant milestone in the academic journey.'
-    },
-    {
-      src: 'assets/images/5f492b83-c3ff-4763-9309-e8940ae03c85.jfif',
-      type: 'image',
-      badge: 'Memory',
-      title: 'Academic Journey Highlight',
-      desc: 'A special moment from the academic journey, capturing the experiences and connections that shaped personal and professional growth.'
-    },
-    {
-      src: 'assets/images/c16c3d0e-36e1-4d6c-84be-4a6c6da8ff76.jfif',
-      type: 'image',
-      badge: 'Memory',
-      title: 'College Life Moment',
-      desc: 'A memorable moment from college life, reflecting the friendships, learning experiences, and personal milestones achieved along the way.'
-    },
-    {
-      src: 'assets/images/e7d1b137-25b1-4edd-87d2-1f9ff1502dd3.jfif',
-      type: 'image',
-      badge: 'Memory',
-      title: 'Campus Experience',
-      desc: 'Capturing the vibrant campus experience and the growth that comes from being part of the Davao del Norte State College community.'
-    },
-    {
-      src: 'assets/images/ee223b5e-150a-4375-aac7-3799dd594d95.jfif',
-      type: 'image',
-      badge: 'Memory',
-      title: 'Special Occasion',
-      desc: 'A special occasion captured during the academic journey, symbolizing dedication, hard work, and the pursuit of excellence.'
     }
   ];
 
@@ -401,7 +373,7 @@ window.addEventListener('load', function () {
   const badge       = document.getElementById('achBadge');
   const titleEl     = document.getElementById('achTitle');
   const descEl      = document.getElementById('achDesc');
-  const numberEl    = document.getElementById('achNumber');
+
   const thumbsWrap  = document.getElementById('achThumbs');
   const dotsWrap    = document.getElementById('achDots');
 
@@ -449,7 +421,7 @@ window.addEventListener('load', function () {
       badge.textContent    = slide.badge;
       titleEl.textContent  = slide.title;
       descEl.textContent   = slide.desc;
-      numberEl.textContent = `#${current + 1}`;
+
       infoEl.style.opacity = '1';
       infoEl.style.transform = 'translateY(0)';
     }, 200);

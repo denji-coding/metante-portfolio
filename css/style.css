@@ -788,9 +788,9 @@ section {
    ============================================================ */
 
 .ach-showcase-card {
-  border-radius: 24px;
+  border-radius: 20px;
   overflow: hidden;
-  max-width: 900px;
+  max-width: 680px;
   margin: 0 auto;
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -802,7 +802,7 @@ section {
 .ach-viewer {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 16 / 9;
   background: linear-gradient(145deg, #0a0a1a, #1a0a2e);
   overflow: hidden;
   cursor: pointer;
